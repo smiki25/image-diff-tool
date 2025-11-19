@@ -4,20 +4,22 @@ A standalone, browser-based image comparison tool that highlights differences be
 
 ## Features
 
-? **100% Client-Side** - No server required, all processing happens in your browser  
-? **Privacy First** - Your images never leave your computer  
-? **Visual Diff Highlighting** - Differences shown in bright red  
-? **Adjustable Sensitivity** - Control how strict the comparison is  
-? **Responsive Design** - Works on desktop and mobile  
-? **Zero Dependencies** - Single HTML file, works offline  
-? **Lightbox View** - Click any image to view full-size  
+**100% Client-Side** - No server required, all processing happens in your browser  
+ **Privacy First** - Your images never leave your computer  
+ **Visual Diff Highlighting** - Differences shown in bright red  
+ **Adjustable Sensitivity** - Control how strict the comparison is  
+ **Responsive Design** - Works on desktop and mobile  
+ **Zero Dependencies** - Single HTML file, works offline  
+ **Lightbox View** - Click any image to view full-size
 
 ## How to Use
 
 ### Option 1: Direct File
+
 Simply open `index.html` in any modern web browser (Chrome, Firefox, Safari, Edge)
 
 ### Option 2: Local Server
+
 ```bash
 # Python 3
 python -m http.server 8000
@@ -51,12 +53,12 @@ npx http-server
 
 ## Use Cases
 
-- ?? **Design QA** - Compare design mockups vs implementation
-- ??? **Visual Regression Testing** - Check for unintended UI changes
-- ?? **Screenshot Comparison** - Compare app screens across versions
-- ?? **Website Testing** - Compare production vs staging pages
-- ?? **Image Verification** - Verify image processing/compression results
-- ?? **Spot the Difference** - Find subtle changes between images
+- **Design QA** - Compare design mockups vs implementation
+- **Visual Regression Testing** - Check for unintended UI changes
+- **Screenshot Comparison** - Compare app screens across versions
+- **Website Testing** - Compare production vs staging pages
+- **Image Verification** - Verify image processing/compression results
+- **Spot the Difference** - Find subtle changes between images
 
 ## Technical Details
 
@@ -69,17 +71,18 @@ npx http-server
 ## Browser Compatibility
 
 Works in all modern browsers that support:
+
 - HTML5 Canvas
 - FileReader API
 - ES6 JavaScript
 
 ## Privacy & Security
 
-- ? No data is sent to any server
-- ? All processing happens locally in your browser
-- ? Images are never uploaded anywhere
-- ? No cookies or tracking
-- ? Can be used completely offline
+- No data is sent to any server
+- All processing happens locally in your browser
+- Images are never uploaded anywhere
+- No cookies or tracking
+- Can be used completely offline
 
 ## License
 
@@ -88,5 +91,3 @@ Free to use, modify, and distribute. No attribution required.
 ## Credits
 
 Created as a standalone tool for comparing images and highlighting differences visually.
-
-
