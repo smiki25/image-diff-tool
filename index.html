@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Comparison</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      background: #ffffff;
+      min-height: 100vh;
+      color: #1a1a1a;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 40px 40px 30px;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .logo {
+      font-size: 17px;
+      font-weight: 400;
+      color: #2a2a2a;
+      letter-spacing: 1px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .images-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 60px;
+    }
+
+    .image-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .image-frame {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border: 1px solid #e8e8e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-frame:hover {
+      border-color: #c0c0c0;
+      background: #f5f5f5;
+    }
+
+    .image-frame.has-image {
+      background: #ffffff;
+      cursor: default;
+    }
+
+    .image-frame.has-image:hover {
+      border-color: #e8e8e8;
+    }
+
+    .placeholder-text {
+      color: #999;
+      font-size: 15px;
+      font-weight: 300;
+      letter-spacing: 0.3px;
+    }
+
+    .image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .image-frame input[type="file"] {
+      display: none;
+    }
+
+    .image-label {
+      font-size: 13px;
+      font-weight: 400;
+      color: #666;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      padding: 12px 32px;
+      border: 1px solid #2a2a2a;
+      background: #ffffff;
+      color: #2a2a2a;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #2a2a2a;
+      color: #ffffff;
+    }
+
+    .btn:disabled {
+      border-color: #e8e8e8;
+      color: #ccc;
+      cursor: not-allowed;
+      background: #fafafa;
+    }
+
+    .btn:disabled:hover {
+      background: #fafafa;
+      color: #ccc;
+    }
+
+    .btn-secondary {
+      border-color: #e8e8e8;
+      color: #666;
+    }
+
+    .btn-secondary:hover {
+      border-color: #2a2a2a;
+      background: #f5f5f5;
+      color: #2a2a2a;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .slider-label {
+      font-size: 12px;
+      color: #999;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    .slider {
+      width: 120px;
+      height: 1px;
+      background: #e8e8e8;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-value {
+      font-size: 12px;
+      color: #666;
+      font-weight: 300;
+      min-width: 30px;
+    }
+
+    .results-container {
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid #f0f0f0;
+      display: none;
+    }
+
+    .results-container.show {
+      display: block;
+    }
+
+    .stats {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      margin-bottom: 50px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #999;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 300;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      color: #2a2a2a;
+      font-weight: 300;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    .comparison-item {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .comparison-label {
+      font-size: 12px;
+      color: #666;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .comparison-item.diff-item .comparison-label {
+      color: #2a2a2a;
+      font-weight: 400;
+    }
+
+    .comparison-img-wrapper {
+      border: 1px solid #e8e8e8;
+      background: #ffffff;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .comparison-item.diff-item .comparison-img-wrapper {
+      border-color: #2a2a2a;
+    }
+
+    .comparison-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+    }
+
+    .comparison-img:hover {
+      opacity: 0.9;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.98);
+      z-index: 1000;
+      padding: 40px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 40px;
+      right: 40px;
+      background: transparent;
+      border: 1px solid #2a2a2a;
+      color: #2a2a2a;
+      padding: 10px 24px;
+      cursor: pointer;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .lightbox-close:hover {
+      background: #2a2a2a;
+      color: #ffffff;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #999;
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 768px) {
+
+      .images-container,
+      .comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .main-content {
+        padding: 40px 20px;
+      }
+
+      .controls {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <div class="logo">IMAGE COMPARISON</div>
+  </div>
+
+  <div class="main-content">
+    <div class="images-container">
+      <div class="image-box">
+        <div class="image-frame" id="leftFrame" onclick="document.getElementById('leftInput').click()">
+          <input type="file" id="leftInput" accept="image/*">
+          <span class="placeholder-text">Click to upload</span>
+          <img id="leftPreview" style="display: none;">
+        </div>
+        <div class="image-label">Left Photo</div>
+      </div>
+
+      <div class="image-box">
+        <div class="image-frame" id="rightFrame" onclick="document.getElementById('rightInput').click()">
+          <input type="file" id="rightInput" accept="image/*">
+          <span class="placeholder-text">Click to upload</span>
+          <img id="rightPreview" style="display: none;">
+        </div>
+        <div class="image-label">Right Photo</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="slider-container">
+        <span class="slider-label">Sensitivity</span>
+        <input type="range" id="thresholdSlider" class="slider" min="0" max="100" value="10">
+        <span class="slider-value" id="thresholdValue">0.10</span>
+      </div>
+      <button class="btn" id="compareBtn" disabled>Compare</button>
+      <button class="btn btn-secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="results-container" id="resultsContainer">
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-label">Dimensions</div>
+          <div class="stat-value" id="dimensionsText">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Similarity</div>
+          <div class="stat-value" id="similarityText">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Different Pixels</div>
+          <div class="stat-value" id="diffPixelsText">—</div>
+        </div>
+      </div>
+
+      <div class="comparison-grid">
+        <div class="comparison-item">
+          <div class="comparison-label">Left Photo</div>
+          <div class="comparison-img-wrapper">
+            <img id="resultLeft" class="comparison-img" onclick="openLightbox(this.src)">
+          </div>
+        </div>
+
+        <div class="comparison-item diff-item">
+          <div class="comparison-label">Differences</div>
+          <div class="comparison-img-wrapper">
+            <img id="resultDiff" class="comparison-img" onclick="openLightbox(this.src)">
+          </div>
+        </div>
+
+        <div class="comparison-item">
+          <div class="comparison-label">Right Photo</div>
+          <div class="comparison-img-wrapper">
+            <img id="resultRight" class="comparison-img" onclick="openLightbox(this.src)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox(); event.stopPropagation();">Close</button>
+    <img id="lightboxImg" onclick="event.stopPropagation()">
+  </div>
+
+  <script>
+    let leftImageData = null;
+    let rightImageData = null;
+
+    // Handle image uploads
+    document.getElementById('leftInput').addEventListener('change', function (e) {
+      handleImageUpload(e.target.files[0], 'left');
+    });
+
+    document.getElementById('rightInput').addEventListener('change', function (e) {
+      handleImageUpload(e.target.files[0], 'right');
+    });
+
+    // Threshold slider
+    document.getElementById('thresholdSlider').addEventListener('input', function (e) {
+      const value = (e.target.value / 1000).toFixed(2);
+      document.getElementById('thresholdValue').textContent = value;
+    });
+
+    function handleImageUpload(file, side) {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+          if (side === 'left') {
+            leftImageData = imageData;
+            document.getElementById('leftPreview').src = e.target.result;
+            document.getElementById('leftPreview').style.display = 'block';
+            document.getElementById('leftFrame').classList.add('has-image');
+            document.getElementById('leftFrame').querySelector('.placeholder-text').style.display = 'none';
+          } else {
+            rightImageData = imageData;
+            document.getElementById('rightPreview').src = e.target.result;
+            document.getElementById('rightPreview').style.display = 'block';
+            document.getElementById('rightFrame').classList.add('has-image');
+            document.getElementById('rightFrame').querySelector('.placeholder-text').style.display = 'none';
+          }
+
+          checkCanCompare();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function checkCanCompare() {
+      const compareBtn = document.getElementById('compareBtn');
+      if (leftImageData && rightImageData) {
+        compareBtn.disabled = false;
+      } else {
+        compareBtn.disabled = true;
+      }
+    }
+
+    document.getElementById('compareBtn').addEventListener('click', compareImages);
+
+    function compareImages() {
+      if (!leftImageData || !rightImageData) {
+        return;
+      }
+
+      const resultsContainer = document.getElementById('resultsContainer');
+      resultsContainer.innerHTML = '<div class="loading">Comparing images...</div>';
+      resultsContainer.classList.add('show');
+
+      setTimeout(() => {
+        const width = Math.min(leftImageData.width, rightImageData.width);
+        const height = Math.min(leftImageData.height, rightImageData.height);
+
+        const threshold = parseFloat(document.getElementById('thresholdValue').textContent);
+
+        // Create diff canvas
+        const diffCanvas = document.createElement('canvas');
+        diffCanvas.width = width;
+        diffCanvas.height = height;
+        const diffCtx = diffCanvas.getContext('2d');
+        const diffImageData = diffCtx.createImageData(width, height);
+
+        let diffPixels = 0;
+        const totalPixels = width * height;
+
+        // Compare pixels
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const i = (y * width + x) * 4;
+
+            const r1 = leftImageData.data[i];
+            const g1 = leftImageData.data[i + 1];
+            const b1 = leftImageData.data[i + 2];
+
+            const r2 = rightImageData.data[i];
+            const g2 = rightImageData.data[i + 1];
+            const b2 = rightImageData.data[i + 2];
+
+            // Calculate color difference
+            const delta = Math.sqrt(
+              Math.pow(r1 - r2, 2) +
+              Math.pow(g1 - g2, 2) +
+              Math.pow(b1 - b2, 2)
+            ) / Math.sqrt(255 * 255 * 3);
+
+            if (delta > threshold) {
+              // Pixel is different - show in red
+              diffImageData.data[i] = 255;     // R
+              diffImageData.data[i + 1] = 0;   // G
+              diffImageData.data[i + 2] = 0;   // B
+              diffImageData.data[i + 3] = 255; // A
+              diffPixels++;
+            } else {
+              // Pixel is same - show muted version
+              diffImageData.data[i] = r1 * 0.35;
+              diffImageData.data[i + 1] = g1 * 0.35;
+              diffImageData.data[i + 2] = b1 * 0.35;
+              diffImageData.data[i + 3] = 255;
+            }
+          }
+        }
+
+        diffCtx.putImageData(diffImageData, 0, 0);
+
+        const similarity = ((totalPixels - diffPixels) / totalPixels * 100).toFixed(1);
+
+        displayResults(width, height, similarity, diffPixels, diffCanvas);
+      }, 100);
+    }
+
+    function displayResults(width, height, similarity, diffPixels, diffCanvas) {
+      const resultsContainer = document.getElementById('resultsContainer');
+
+      resultsContainer.innerHTML = `
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-label">Dimensions</div>
+            <div class="stat-value">${width} x ${height}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Similarity</div>
+            <div class="stat-value">${similarity}%</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Different Pixels</div>
+            <div class="stat-value">${diffPixels.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comparison-item">
+            <div class="comparison-label">Left Photo</div>
+            <div class="comparison-img-wrapper">
+              <img id="resultLeft" class="comparison-img" onclick="openLightbox(this.src)">
+            </div>
+          </div>
+
+          <div class="comparison-item diff-item">
+            <div class="comparison-label">Differences</div>
+            <div class="comparison-img-wrapper">
+              <img id="resultDiff" class="comparison-img" onclick="openLightbox(this.src)">
+            </div>
+          </div>
+
+          <div class="comparison-item">
+            <div class="comparison-label">Right Photo</div>
+            <div class="comparison-img-wrapper">
+              <img id="resultRight" class="comparison-img" onclick="openLightbox(this.src)">
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Create canvases
+      const canvasLeft = document.createElement('canvas');
+      canvasLeft.width = width;
+      canvasLeft.height = height;
+      const ctxLeft = canvasLeft.getContext('2d');
+      ctxLeft.putImageData(leftImageData, 0, 0);
+
+      const canvasRight = document.createElement('canvas');
+      canvasRight.width = width;
+      canvasRight.height = height;
+      const ctxRight = canvasRight.getContext('2d');
+      ctxRight.putImageData(rightImageData, 0, 0);
+
+      // Set images
+      document.getElementById('resultLeft').src = canvasLeft.toDataURL();
+      document.getElementById('resultRight').src = canvasRight.toDataURL();
+      document.getElementById('resultDiff').src = diffCanvas.toDataURL();
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', function () {
+      leftImageData = null;
+      rightImageData = null;
+
+      document.getElementById('leftInput').value = '';
+      document.getElementById('rightInput').value = '';
+
+      document.getElementById('leftPreview').style.display = 'none';
+      document.getElementById('rightPreview').style.display = 'none';
+
+      document.getElementById('leftFrame').classList.remove('has-image');
+      document.getElementById('rightFrame').classList.remove('has-image');
+
+      document.getElementById('leftFrame').querySelector('.placeholder-text').style.display = 'block';
+      document.getElementById('rightFrame').querySelector('.placeholder-text').style.display = 'block';
+
+      document.getElementById('resultsContainer').classList.remove('show');
+
+      checkCanCompare();
+    });
+
+    function openLightbox(src) {
+      document.getElementById('lightbox').classList.add('active');
+      document.getElementById('lightboxImg').src = src;
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+  </script>
+</body>
+
+</html>
